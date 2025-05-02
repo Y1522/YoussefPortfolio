@@ -1,0 +1,432 @@
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
+import cvPdf from '../assets/Youssef_CV_final.pdf';
+
+const ResumeSection = styled.section`
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5rem 2rem;
+  position: relative;
+`;
+
+const ContentContainer = styled.div`
+  max-width: 1200px;
+  width: 100%;
+`;
+
+const SectionTitle = styled(motion.h2)`
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 3rem;
+  text-align: center;
+  
+  span {
+    background: linear-gradient(90deg, #915eff, #00abfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+`;
+
+const Tabs = styled(motion.div)`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+  gap: 2rem;
+  flex-wrap: wrap;
+`;
+
+const Tab = styled(motion.button)`
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: ${props => props.active ? '#fff' : '#aaa'};
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  position: relative;
+  transition: all 0.3s ease;
+  
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: ${props => props.active ? '100%' : '0'};
+    height: 2px;
+    background: linear-gradient(90deg, #915eff, #00abfa);
+    transition: width 0.3s ease;
+  }
+  
+  &:hover:after {
+    width: 100%;
+  }
+`;
+
+const TimelineContainer = styled(motion.div)`
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 0;
+  
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: calc(50% - 1px);
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(145, 94, 255, 0), rgba(145, 94, 255, 1), rgba(145, 94, 255, 0));
+    
+    @media (max-width: 768px) {
+      left: 20px;
+    }
+  }
+`;
+
+const TimelineItem = styled(motion.div)`
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 4rem;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    margin-left: 40px;
+  }
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  &:nth-child(odd) {
+    .timeline-content {
+      margin-left: auto;
+      
+      @media (max-width: 768px) {
+        margin-left: 0;
+      }
+    }
+  }
+`;
+
+const TimelineDot = styled(motion.div)`
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #915eff;
+  left: calc(50% - 10px);
+  top: 20px;
+  box-shadow: 0 0 10px rgba(145, 94, 255, 0.8);
+  z-index: 1;
+  
+  @media (max-width: 768px) {
+    left: -30px;
+  }
+`;
+
+const TimelineContent = styled(motion.div)`
+  width: 45%;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  position: relative;
+  
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  }
+`;
+
+const TimelineDate = styled.span`
+  display: inline-block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #915eff;
+  margin-bottom: 0.5rem;
+  background: rgba(145, 94, 255, 0.1);
+  padding: 0.3rem 0.8rem;
+  border-radius: 50px;
+`;
+
+const TimelineTitle = styled.h3`
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #fff;
+`;
+
+const TimelineSubtitle = styled.h4`
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: #00abfa;
+`;
+
+const TimelineText = styled.p`
+  font-size: 1rem;
+  color: #aaa;
+  line-height: 1.5;
+`;
+
+const SkillsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+`;
+
+const SkillBar = styled(motion.div)`
+  margin-bottom: 1.5rem;
+  
+  .skill-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+  
+  .skill-name {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #fff;
+  }
+  
+  .skill-percentage {
+    font-size: 0.9rem;
+    color: #00abfa;
+  }
+  
+  .skill-bar-bg {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .skill-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #915eff, #00abfa);
+    border-radius: 10px;
+    transform-origin: left;
+  }
+`;
+
+const Resume = () => {
+  const [activeTab, setActiveTab] = useState('experience');
+  const [ref, inView] = useInView({
+    threshold: 0.1,
+    triggerOnce: false,
+  });
+  
+  const experienceData = [
+    {
+      date: "2022 - Present",
+      title: "Junior Frontend Developer",
+      company: "Freelancing",
+      description: "Assisted in the development of various web projects. Focused on HTML, CSS, and JavaScript implementation under the guidance of senior developers."
+    },
+    {
+      date: "2017 - Present",
+      title: "Volunteer",
+      company: "Bibliotheca Alexandrina",
+      description: "Voluteering at Three diffrent Departments (Childrens Library - PSC - SDSP) , learning everyday a new skill and enjoy. "
+    },
+  ];
+  
+  const educationData = [
+    {
+      date: "2022 - 2024",
+      title: "Web Development Bootcamp",
+      institution: "Self-learning",
+      description: "Intensive full-stack web development program covering frontend and backend technologies, with a focus on modern JavaScript frameworks."
+    },
+    {
+      date: "2024 - Present",
+      title: "Student of Computers and Data Science",
+      institution: "Alexandria University",
+      description: "Studied computer science fundamentals, algorithms, data structures, and web technologies. "
+    }
+  ];
+  
+  const skillsData = [
+    { name: "React", percentage: 95 },
+    { name: "JavaScript", percentage: 90 },
+    { name: "HTML/CSS", percentage: 95 },
+    { name: "Node.js", percentage: 75 },
+    { name: "UI/UX Design", percentage: 80 },
+    { name: "Git/GitHub", percentage: 85 },
+  ];
+  
+  const renderTimeline = (data) => {
+    return data.map((item, index) => (
+      <TimelineItem
+        key={index}
+        initial={{ opacity: 0, y: 50 }}
+        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+        transition={{ duration: 0.5, delay: index * 0.2 }}
+      >
+        <TimelineDot 
+          initial={{ scale: 0 }}
+          animate={inView ? { scale: 1 } : { scale: 0 }}
+          transition={{ duration: 0.5, delay: index * 0.2 + 0.2 }}
+        />
+        <TimelineContent 
+          className="timeline-content"
+          whileHover={{ scale: 1.03 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+        >
+          <TimelineDate>{item.date}</TimelineDate>
+          <TimelineTitle>{item.title}</TimelineTitle>
+          <TimelineSubtitle>{item.company || item.institution}</TimelineSubtitle>
+          <TimelineText>{item.description}</TimelineText>
+        </TimelineContent>
+      </TimelineItem>
+    ));
+  };
+  
+  const renderSkills = () => {
+    return (
+      <SkillsGrid>
+        {skillsData.map((skill, index) => (
+          <SkillBar
+            key={index}
+            initial={{ opacity: 0, x: -20 }}
+            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+          >
+            <div className="skill-info">
+              <span className="skill-name">{skill.name}</span>
+              <span className="skill-percentage">{skill.percentage}%</span>
+            </div>
+            <div className="skill-bar-bg">
+              <motion.div 
+                className="skill-bar-fill"
+                initial={{ scaleX: 0 }}
+                animate={inView ? { scaleX: skill.percentage / 100 } : { scaleX: 0 }}
+                transition={{ duration: 1, delay: index * 0.1 + 0.3, ease: "easeOut" }}
+              />
+            </div>
+          </SkillBar>
+        ))}
+      </SkillsGrid>
+    );
+  };
+  
+  const tabVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        delayChildren: 0.3,
+        staggerChildren: 0.2
+      }
+    }
+  };
+  
+  return (
+    <ResumeSection id="resume" ref={ref}>
+      <ContentContainer>
+        <SectionTitle
+          initial={{ opacity: 0, y: -50 }}
+          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: -50 }}
+          transition={{ duration: 0.5 }}
+        >
+          My <span>Resume</span>
+        </SectionTitle>
+        
+        <Tabs
+          variants={tabVariants}
+          initial="hidden"
+          animate={inView ? "visible" : "hidden"}
+        >
+          <Tab 
+            active={activeTab === 'experience'} 
+            onClick={() => setActiveTab('experience')}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Experience
+          </Tab>
+          <Tab 
+            active={activeTab === 'education'} 
+            onClick={() => setActiveTab('education')}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Education
+          </Tab>
+          <Tab 
+            active={activeTab === 'skills'} 
+            onClick={() => setActiveTab('skills')}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Skills
+          </Tab>
+        </Tabs>
+        
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.5 }}
+        >
+          {activeTab === 'experience' && (
+            <TimelineContainer>
+              {renderTimeline(experienceData)}
+            </TimelineContainer>
+          )}
+          
+          {activeTab === 'education' && (
+            <TimelineContainer>
+              {renderTimeline(educationData)}
+            </TimelineContainer>
+          )}
+          
+          {activeTab === 'skills' && renderSkills()}
+        </motion.div>
+        
+        <motion.div
+          style={{ textAlign: 'center', marginTop: '3rem' }}
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ delay: 1 }}
+        >
+          <a 
+            href={cvPdf}
+            download="Youssef_CV.pdf"
+            style={{
+              display: 'inline-block',
+              background: 'linear-gradient(90deg, #915eff, #00abfa)',
+              padding: '0.8rem 2rem',
+              borderRadius: '5px',
+              color: 'white',
+              fontWeight: 500,
+              textDecoration: 'none',
+              boxShadow: '0 10px 20px rgba(145, 94, 255, 0.3)'
+            }}
+          >
+            Download Full CV
+          </a>
+        </motion.div>
+      </ContentContainer>
+    </ResumeSection>
+  );
+};
+
+export default Resume; 
