@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Youssef's 3D Portfolio
 
 A modern, interactive portfolio website built with React and Three.js featuring smooth animations and 3D elements.
@@ -62,3 +63,6 @@ To customize this portfolio:
 ## License
 
 MIT 
+=======
+# Youssefcv1.1
+>>>>>>> d33c3b9d58286fbcc0ef76a31db7519df6b0906c
