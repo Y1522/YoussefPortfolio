@@ -227,12 +227,10 @@ const Home = () => {
           <SubHeading variants={itemVariants}>Welcome to my portfolio</SubHeading>
           <MainHeading variants={itemVariants}>
             Hi, I'm <span className="gradient-text">Youssef</span><br />
-            Frontend Developer
+            Data Science Student
           </MainHeading>
           <Description variants={itemVariants}>
-            I design and develop modern, responsive web applications 
-            with a focus on user experience and cutting-edge technologies.
-            Specializing in React and creative 3D interfaces.
+          Passionate Data Science student with a keen interest in web development, robotics, and information technology. I enjoy creating innovative solutions, exploring new technologies, and applying data-driven insights to build impactful and user-focused projects.
           </Description>
           <CTAButton
             className="glow-effect"

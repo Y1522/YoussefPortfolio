@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import cvPdf from '../assets/Youssef_CV_final.pdf';
+import cvPdf from '../assets/YOUSSEF SAYED HUSSIEN - CV  (2).pdf';
 
 const ResumeSection = styled.section`
   min-height: 100vh;
@@ -276,17 +276,40 @@ const Resume = () => {
   
   const experienceData = [
     {
-      date: "2022 - Present",
-      title: "Junior Frontend Developer",
-      company: "Freelancing",
-      description: "Assisted in the development of various web projects. Focused on HTML, CSS, and JavaScript implementation under the guidance of senior developers."
-    },
-    {
       date: "2017 - Present",
       title: "Volunteer",
       company: "Bibliotheca Alexandrina",
-      description: "Voluteering at Three diffrent Departments (Childrens Library - PSC - SDSP) , learning everyday a new skill and enjoy."
+      description: `Volunteering at the Children's Library.
+    Creating and presenting scientific content in an engaging and fun way for children aged 6–11.
+    Conducting workshops such as Web Land, Make Your Own Game, AI Sites, and more for children aged 9–11.`
     },
+    {
+      date: "2023 - Present",
+      title: "Volunteer",
+      company: "Bibliotheca Alexandrina",
+      description: `Volunteering at the Planetarium Science Center.
+    Creating and presenting scientific content in an engaging and fun way for participants aged 6–18.
+    Mentoring teams in robotics competitions, including FLL Challenge and Robofest.
+    Organizing and planning large-scale educational and scientific events.`
+    },
+    {
+      date: "2025",
+      title: "IT Volunteer",
+      company: "Techne Summit Alexandria",
+      description: `As an IT team member, I contributed to the setup and maintenance of network infrastructure, managed audio-visual equipment and presentation systems, and provided real-time technical support during large-scale events. By troubleshooting hardware, network, and AV issues and collaborating closely with the IT team, I helped ensure smooth technical operations and a seamless experience for attendees, speakers, and event organizers.`
+    },
+    {
+      date: "2026",
+      title: "Part Time organizer ",
+      company: "icom Group ",
+      description: `Part of the IT and AV teams dealing with a real world projects and stepup `
+    },
+    {
+      date: "2025-2026",
+      title: "JUDGE",
+      company: "Robotics Competitions",
+      description: `(MRC, OREC, Guins Cup , RoboCup ) Judging the Robotics Competitions, providing feedback and guidance to the participants, and helping them improve their skills. `
+    }
   ];
   
   const educationData = [
@@ -300,17 +323,49 @@ const Resume = () => {
       date: "2024 - Present",
       title: "Student of Computers and Data Science",
       institution: "Alexandria University",
-      description: "Studied computer science fundamentals, algorithms, data structures, and web technologies."
+      description: "Studied computer science fundamentals, algorithms, data structures, and ."
     }
   ];
   
   const projectsData = {
-    dataScience: [],
-    machineLearning: [],
+    dataScience: [
+      {
+        name: "cardio-risk-analysis",
+        githubLink: "https://github.com/Y1522/cardio-risk-analysis",
+        description: "Cardio Risk Analysis is a data mining and machine learning project focused on analyzing cardiovascular health data using preprocessing, feature scaling, clustering algorithms, and logistic regression to discover hidden patterns and predict potential health risks.",
+        technologies: ["Python", "Logistic Regression", "K-Medoids Clustering", "Feature Scaling", "Data Visualization", "Scikit-learn", "Genatic Algorithm","Pandas", "Matplotlib"]
+      },
+      {
+        name: "car-price-prediction-sas",
+        githubLink: "https://github.com/Y1522/car-price-prediction-sas",
+        description: "End-to-end SAS data Science and machine learning project for used car price prediction and price category classification using preprocessing, feature engineering, regression, and multinomial logistic models.",
+        technologies: ["SAS", "Data Science", "Machine Learning", "Preprocessing", "Feature Engineering", "Regression", "Multinomial Logistic Models"]
+      }
+    ],
+    machineLearning: [
+      {
+        name: "AI-vs-Human-Puzzle",
+        githubLink: "https://github.com/Y1522/AI-vs-Human-Puzzle",
+        description: "An interactive 8-puzzle game built with Python and Tkinter, featuring AI-powered solving using A* and BFS algorithms. Challenge yourself, watch the AI solve puzzles in real time, or compete against intelligent search algorithms in an exciting race mode.",
+        technologies: ["Python", "Tkinter", "A*", "BFS"]
+      },
+      {
+        name: "housing-price-regression",
+        githubLink: "https://github.com/Y1522/housing-price-regression",
+        description: "Machine learning regression project analyzing the California Housing dataset using exploratory data analysis, preprocessing, feature engineering, and regression modeling for house price prediction.",
+        technologies: ["Python", "Linear Regression", "Pandas", "Matplotlib"]
+      }
+    ],
     web: [
       {
+        name: "Science_Festivity-25",
+        githubLink: "https://github.com/Y1522/Science_Festivity-25",
+        description: "An interactive educational website developed for Science Festivity 2025, showcasing the achievements of Arab scientists during the Golden Age of Islam. Features multilingual support, educational games, an AI-powered chatbot assistant AND  an interactive map",
+        technologies: ["HTML", "CSS", "JavaScript", "Firebase Hosting"]
+      },
+      {
         name: "Portfolio Website",
-        githubLink: "https://github.com/youssefssaied",
+        githubLink: "https://github.com/Y1522/Youssefcv1.1",
         description: "A modern, responsive portfolio website built with React, Three.js, and Framer Motion. Features interactive 3D elements, smooth animations, and a clean, professional design.",
         technologies: ["React", "Three.js", "Framer Motion", "Styled Components", "CSS3"]
       }
@@ -318,14 +373,19 @@ const Resume = () => {
   };
   
   const skillsData = [
-    { name: "React", percentage: 95 },
-    { name: "JavaScript", percentage: 90 },
+    { name: "Python ", percentage: 95 },
+    { name: "JavaScript", percentage: 80 },
+    { name: "Java", percentage: 80 },
+    { name: "C++ (Arduino)", percentage: 80 },
+    { name: "React,Three.js", percentage: 80 },
     { name: "HTML/CSS", percentage: 95 },
-    { name: "Node.js", percentage: 75 },
-    { name: "UI/UX Design", percentage: 80 },
     { name: "Git/GitHub", percentage: 85 },
-    { name: "Python", percentage: 80 },
-    { name: "Java", percentage: 85 },
+    { name: "Data Structures & Algorithms", percentage: 80 },
+    { name: "Problem Solving", percentage: 80 },
+    { name: "AI & ML", percentage: 80 },
+    { name: "IT", percentage: 80 },
+    { name: "Robotics", percentage: 80 },
+    { name: "Mindstorm", percentage: 90 },
   ];
   
   const renderTimeline = (data) => {

@@ -331,7 +331,10 @@ const InteractiveRobot = () => {
     "I'am not Scary 😁",
     "Go to my friend Beary at the contact section 🐻",
     "Don't worry I'm Youssef's friend 🤖",
-    "I'am happy to see you! 😊"
+    "I'am happy to see you! 😊",
+    "Youssef is a great developer 😊",
+    "Youssef is a Data Science student 😊",
+    "Youssef is a Robotics Instructor 😊",
   ];
   const [msgIndex, setMsgIndex] = useState(0);
 
@@ -409,14 +412,13 @@ const About = () => {
   const [counts, setCounts] = useState([0, 0, 0]);
   
   const skills = [
-    "JavaScript", "React", "CSS", "HTML", 
-    "Node.js", "Git", "UI/UX Design"
+    "Python", "Java", "JavaScript", "C++ (Arduino)","CSS", "HTML", 
+    "React", "Three.js", "Git|Github", "Data Structures&Algorithms", "Problem Solving", "AI&ML", "IT", "Robotics","Mindstorm"
   ];
   
   const stats = [
-    { number: "1+", label: "Years Experience" },
-    { number: "20+", label: "Projects Completed" },
-    { number: "2+", label: "Happy Clients" }
+    { number: "2+", label: "Years Experience" },
+    { number: "20+", label: "Projects Completed" }
   ];
 
   // Animation for counting up numbers
@@ -498,15 +500,20 @@ const About = () => {
             animate={inView ? "visible" : "hidden"}
           >
             <Paragraph variants={itemVariants}>
-              Hello! I'm Youssef, a passionate frontend developer with a strong focus on creating 
-              interactive web experiences. I specialize in building modern, responsive web 
-              applications that combine cutting-edge technologies with thoughtful user interfaces.
+            Hello! I'm Youssef, a technology enthusiast and third-year Data Science student
+             at the Faculty of Computers and Data Science, Alexandria University. 
+             With a strong foundation in web development, robotics, artificial intelligence,
+              machine learning, and IT, I am passionate about building innovative solutions 
+              that bridge the gap between ideas and real-world applications.
             </Paragraph>
             
             <Paragraph variants={itemVariants}>
-              My journey in web development began 2 years ago, and since then, I've been 
-              dedicated to mastering the latest frontend frameworks and tools. I enjoy bringing 
-              creativity to the technical process and finding innovative solutions to complex problems.
+            For nearly three years, I have been dedicated to learning, experimenting, and creating projects
+             that challenge my skills and expand my knowledge. 
+             I believe that great software is built on strong fundamentals, 
+             which is why I focus on applying data structures, algorithms, and efficient problem-solving techniques . 
+             Driven by curiosity and continuous improvement, I am always looking for new opportunities
+              to learn, grow, and contribute to impactful technology-driven solutions.
             </Paragraph>
             
             <motion.div variants={itemVariants}>
