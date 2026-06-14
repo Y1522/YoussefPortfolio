@@ -317,8 +317,7 @@ const Resume = () => {
       date: "2024 - Present",
       title: "Student of Computers and Data Science",
       institution: "Alexandria University",
-      description: "Majored in Data Science, studying core tools and software used in the field, along with data science methodologies, machine learning, probability (I & II), and data structures.
-"
+      description: "Majored in Data Science, studying core tools and software used in the field, along with data science methodologies, machine learning, probability (I & II), data structures , and more "
     }
   ];
   
