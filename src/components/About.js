@@ -417,14 +417,14 @@ const About = () => {
   ];
   
   const stats = [
-    { number: "3+", label: "Years Experience" },
+    { number: "2+", label: "Years Experience" },
     { number: "20+", label: "Projects Completed" }
   ];
 
   // Animation for counting up numbers
   useEffect(() => {
     if (inView) {
-      const targetValues = [1, 20, 2];
+      const targetValues = [2, 20];
       const duration = 2000; // 2 seconds for the animation
       const frameDuration = 1000 / 60; // 60fps
       const totalFrames = Math.round(duration / frameDuration);
