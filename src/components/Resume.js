@@ -314,16 +314,11 @@ const Resume = () => {
   
   const educationData = [
     {
-      date: "2022 - 2024",
-      title: "Web Development Bootcamp",
-      institution: "Self-learning",
-      description: "Intensive full-stack web development program covering frontend and backend technologies, with a focus on modern JavaScript frameworks."
-    },
-    {
       date: "2024 - Present",
       title: "Student of Computers and Data Science",
       institution: "Alexandria University",
-      description: "Studied computer science fundamentals, algorithms, data structures, and ."
+      description: "Majored in Data Science, studying core tools and software used in the field, along with data science methodologies, machine learning, probability (I & II), and data structures.
+"
     }
   ];
   
