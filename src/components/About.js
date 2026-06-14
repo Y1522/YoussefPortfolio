@@ -340,6 +340,7 @@ const InteractiveRobot = () => {
       setMsgIndex((prev) => (prev + 1) % messages.length);
     }, 3000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   useEffect(() => {
