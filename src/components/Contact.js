@@ -1,27 +1,104 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { Canvas } from '@react-three/fiber';
+import ContactBear from './ContactBear';
+
+// Update the animation styles for the bear's speech bubble and add section glow
+const cursorTrackingStyles = `
+  @keyframes blinkAnimation {
+    0% { transform: scaleY(1); }
+    45% { transform: scaleY(1); }
+    50% { transform: scaleY(0.1); }
+    55% { transform: scaleY(1); }
+    100% { transform: scaleY(1); }
+  }
+  
+  @keyframes floatAnimation {
+    0% { transform: translateX(-50%) translateY(0px); }
+    50% { transform: translateX(-50%) translateY(-5px); }
+    100% { transform: translateX(-50%) translateY(0px); }
+  }
+  
+  .bear-speech {
+    animation: floatAnimation 4s ease-in-out infinite;
+  }
+  
+  #contact {
+    scroll-margin-top: 80px;
+  }
+  
+  /* Add a subtle glow to the bear container when scrolling */
+  .contact-section-container .fixed-bear-container {
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .contact-section-container.scrolled .fixed-bear-container {
+    box-shadow: none; /* Remove shadow when scrolled */
+  }
+  
+  /* Speech bubble glow effect */
+  .bear-speech {
+    position: relative;
+  }
+  
+  .bear-speech::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 15px;
+    z-index: -1;
+    background: transparent;
+    box-shadow: 0 0 20px rgba(145, 94, 255, 0.2);
+    opacity: 0.7;
+    animation: pulsate 3s ease-in-out infinite;
+  }
+  
+  @keyframes pulsate {
+    0% { opacity: 0.7; }
+    50% { opacity: 0.9; }
+    100% { opacity: 0.7; }
+  }
+`;
 
 const ContactSection = styled.section`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* Start from top */
   align-items: center;
-  padding: 5rem 2rem;
+  padding: 1rem 2rem 5rem 2rem; /* Reduced top padding */
   position: relative;
+  background: transparent; /* Make transparent to let app background show through */
+  border-radius: 0; /* Remove border radius */
+  box-shadow: none; /* Remove shadow */
+  overflow: visible; /* Allow content to overflow */
+  z-index: 1; /* Ensure it's above the global canvas but below the header */
+  
+  /* Remove the ::before element with gradients */
+  &::before {
+    display: none;
+  }
 `;
 
 const ContentContainer = styled.div`
   max-width: 1200px;
   width: 100%;
+  margin-top: 20px; /* Reduced margin */
+  padding-top: 10px; /* Add padding */
+  position: relative;
+  z-index: 10;
 `;
 
 const SectionTitle = styled(motion.h2)`
   font-size: 3.5rem;
   font-weight: 700;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
+  margin-top: 1rem;
   text-align: center;
   
   span {
@@ -34,7 +111,8 @@ const SectionTitle = styled(motion.h2)`
 const ContactContent = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: 4rem;
+  gap: 3rem;
+  width: 100%;
   
   @media (min-width: 768px) {
     grid-template-columns: 1fr 1fr;
@@ -45,16 +123,18 @@ const ContactForm = styled(motion.form)`
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-`;
-
-const FormGroup = styled.div`
-  position: relative;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  border-radius: 15px;
+  border: 1px solid rgba(145, 94, 255, 0.2);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 `;
 
 const FormInput = styled(motion.input)`
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(145, 94, 255, 0.2);
   border-radius: 10px;
   padding: 1rem;
   color: #fff;
@@ -65,6 +145,7 @@ const FormInput = styled(motion.input)`
     outline: none;
     border-color: #915eff;
     box-shadow: 0 0 15px rgba(145, 94, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
   }
   
   &::placeholder {
@@ -148,23 +229,31 @@ const ContactInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  border-radius: 15px;
+  border: 1px solid rgba(145, 94, 255, 0.2);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 `;
 
 const ContactCard = styled(motion.div)`
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.07);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(145, 94, 255, 0.2);
   border-radius: 10px;
   padding: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1.5rem;
   transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 25px rgba(145, 94, 255, 0.2);
     border-color: #915eff;
+    background: rgba(255, 255, 255, 0.1);
   }
 `;
 
@@ -176,6 +265,7 @@ const IconBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  box-shadow: 0 5px 15px rgba(145, 94, 255, 0.3);
   
   svg {
     width: 24px;
@@ -207,8 +297,8 @@ const SocialLinks = styled(motion.div)`
 const SocialButton = styled(motion.a)`
   width: 45px;
   height: 45px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(145, 94, 255, 0.2);
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -228,413 +318,93 @@ const SocialButton = styled(motion.a)`
   }
 `;
 
-const BearContainer = styled(motion.div)`
-  position: sticky;
-  top: 100px;
-  width: 200px;
-  height: 200px;
-  margin: 0 auto 2rem;
-  perspective: 1500px;
-  z-index: 50;
-`;
-
-const Bear = styled.div`
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.1s ease;
-  will-change: transform;
-  cursor: pointer;
-`;
-
-const BearHead = styled.div`
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%) translateZ(20px);
-  width: 120px;
-  height: 100px;
-  border-radius: 60% 60% 50% 50%;
-  background: linear-gradient(135deg, #915eff, #7340c7);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-  z-index: 10;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: inherit;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 50%);
-  }
-`;
-
-const BearEar = styled.div`
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #7340c7;
-  box-shadow: inset 3px -3px 10px rgba(0, 0, 0, 0.3);
-  
-  &.left {
-    top: -15px;
-    left: 10px;
-    transform: translateZ(5px);
-    
-    &::before {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: #b490ff;
-      top: 10px;
-      left: 10px;
-      opacity: 0.6;
-    }
-  }
-  
-  &.right {
-    top: -15px;
-    right: 10px;
-    transform: translateZ(5px);
-    
-    &::before {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: #b490ff;
-      top: 10px;
-      left: 10px;
-      opacity: 0.6;
-    }
-  }
-`;
-
-const BearEye = styled.div`
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: white;
-  z-index: 11;
-  transition: height 0.3s ease;
-  overflow: hidden;
-  transform: translateZ(25px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  
-  &.left {
-    top: 40px;
-    left: 30px;
-  }
-  
-  &.right {
-    top: 40px;
-    right: 30px;
-  }
-  
-  &::after {
-    content: '';
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #000;
-    top: 4px;
-    left: 4px;
-    animation: eyeBlink 3s infinite;
-  }
-  
-  @keyframes eyeBlink {
-    0%, 95%, 100% { transform: scale(1); }
-    97% { transform: scale(1, 0.1); }
-  }
-  
-  &.covered {
-    height: 2px;
-    top: 48px;
-  }
-`;
-
-const BearMuzzle = styled.div`
-  position: absolute;
-  width: 60px;
-  height: 50px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #00abfa, #0090d4);
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%) translateZ(30px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  
-  &::after {
-    content: '';
-    position: absolute;
-    width: 30px;
-    height: 15px;
-    border-radius: 0 0 15px 15px;
-    background: #00abfa;
-    bottom: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  
-  &::before {
-    content: '';
-    position: absolute;
-    width: 40px;
-    height: 25px;
-    border-radius: 50%;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
-    top: 10px;
-    left: 10px;
-  }
-`;
-
-const BearNose = styled.div`
-  position: absolute;
-  width: 20px;
-  height: 15px;
-  border-radius: 50%;
-  background: #333;
-  top: 15px;
-  left: 50%;
-  transform: translateX(-50%) translateZ(2px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-`;
-
-const BearBody = styled.div`
-  position: absolute;
-  width: 140px;
-  height: 120px;
-  border-radius: 60px 60px 50px 50px;
-  background: linear-gradient(to bottom, #915eff, #6a3bba);
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%) translateZ(10px);
-  z-index: 1;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  
-  &::before {
-    content: '';
-    position: absolute;
-    width: 100px;
-    height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 70%);
-    top: 20px;
-    left: 20px;
-  }
-`;
-
-const BearArm = styled.div`
-  position: absolute;
-  width: 30px;
-  height: 80px;
-  border-radius: 15px;
-  background: linear-gradient(to bottom, #915eff, #6a3bba);
-  bottom: 30px;
-  transform-origin: bottom center;
-  box-shadow: -2px 5px 10px rgba(0, 0, 0, 0.2);
-  
-  &.left {
-    left: 15px;
-    transform: rotate(15deg) translateZ(15px);
-    animation: waveArm 5s infinite alternate;
-  }
-  
-  &.right {
-    right: 15px;
-    transform: rotate(-15deg) translateZ(15px);
-    
-    &::before {
-      content: '';
-      position: absolute;
-      width: 100%;
-      height: 50%;
-      border-radius: 15px 15px 0 0;
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
-      top: 0;
-      left: 0;
-    }
-  }
-  
-  @keyframes waveArm {
-    0%, 10% { transform: rotate(15deg) translateZ(15px); }
-    40%, 60% { transform: rotate(50deg) translateZ(15px); }
-    90%, 100% { transform: rotate(15deg) translateZ(15px); }
-  }
-`;
-
-const BearPaw = styled.div`
-  position: absolute;
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #7340c7, #6a3bba);
-  top: 0;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.3s, transform 0.3s;
-  z-index: 12;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
-  
-  &.visible {
-    opacity: 1;
-    transform: translateY(35px) translateZ(40px);
-  }
-  
-  &.left {
-    left: 20px;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      width: 10px;
-      height: 5px;
-      border-radius: 50%;
-      background: #503380;
-      top: 22px;
-      left: 7px;
-      box-shadow: 15px 0 0 #503380;
-      transform: translateZ(2px);
-    }
-  }
-  
-  &.right {
-    right: 20px;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      width: 10px;
-      height: 5px;
-      border-radius: 50%;
-      background: #503380;
-      top: 22px;
-      right: 7px;
-      box-shadow: -15px 0 0 #503380;
-      transform: translateZ(2px);
-    }
-  }
-`;
-
-const Tooltip = styled.div`
-  position: absolute;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.3s, transform 0.3s;
-  white-space: nowrap;
-  z-index: 100;
-  top: -30px;
-  left: 50%;
-  transform: translateX(-50%) translateY(10px);
-  
-  &::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -8px;
-    border-width: 8px;
-    border-style: solid;
-    border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
-  }
-  
-  &.bear-speech {
-    top: auto;
-    bottom: 100%;
-    margin-bottom: 10px;
-    left: 50%;
-    min-width: 120px;
-    text-align: center;
-    transform: translateX(-50%) translateY(10px);
-  }
-`;
-
 const TooltipTrigger = styled.div`
   position: relative;
+  cursor: pointer;
   
-  &:hover ${Tooltip} {
-    opacity: 1;
-    transform: translateY(0);
+  &:hover ${ContactCard} {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    border-color: #915eff;
   }
+`;
+
+// Create a fixed container for the bear that stays visible at the top of Contact section
+const FixedBearContainer = styled.div`
+  position: sticky;
+  top: 80px; /* Space for header */
+  left: 0;
+  width: 100%;
+  height: 220px; /* Slightly reduced height */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align to top */
+  z-index: 100; /* Increased z-index to ensure visibility */
+  margin-bottom: 0; /* Remove margin */
+  pointer-events: none;
+  padding-top: 0px; /* Removed top padding completely */
+  background: linear-gradient(180deg, 
+    rgba(0, 0, 0, 0.8) 0%, 
+    rgba(0, 0, 0, 0.6) 40%, 
+    rgba(0, 0, 0, 0.4) 70%, 
+    rgba(0, 0, 0, 0) 100%
+  ); /* Darker gradient that fades to transparent */
+  box-shadow: none; /* Remove shadow */
+  border: none; /* Remove border */
+`;
+
+const BearContainer = styled(motion.div)`
+  position: relative;
+  width: 280px;
+  height: 200px; /* Slightly reduced height */
+  perspective: 1500px;
+  z-index: 50;
+  pointer-events: all;
+  margin-top: 0px; /* Removed space below header completely */
+  border: none; /* Remove any border */
+  box-shadow: none; /* Remove any shadow */
 `;
 
 const BearSpeech = styled.div`
   position: absolute;
   background: rgba(0, 0, 0, 0.8);
   color: white;
-  padding: 15px;
+  padding: 15px 20px;
   border-radius: 15px;
-  font-size: 1rem;
+  font-size: 1.1rem;
   pointer-events: none;
   opacity: 1;
   transition: all 0.5s ease;
   white-space: normal;
   z-index: 100;
-  top: -70px;
+  bottom: 10%; /* Position extremely close to the bear's mouth */
+  margin-bottom: 0; /* Reset margin */
   left: 50%;
   transform: translateX(-50%) translateY(0);
   text-align: center;
   line-height: 1.4;
-  min-width: 220px;
-  max-width: 280px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  min-width: 260px;
+  max-width: 320px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), 0 0 15px rgba(145, 94, 255, 0.3);
+  border: none; /* Remove border completely */
   
   &::after {
     content: '';
     position: absolute;
-    bottom: -8px;
+    bottom: -15px; /* Extend the tail even further to connect with the bear's mouth */
     left: 50%;
-    margin-left: -8px;
-    border-width: 8px;
+    margin-left: -12px;
+    border-width: 15px; /* Made larger for better visibility */
     border-style: solid;
     border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
   }
-`;
-
-const BearTail = styled.div`
-  position: absolute;
-  width: 35px;
-  height: 45px;
-  background: linear-gradient(to right, #915eff, #6a3bba);
-  border-radius: 50% 50% 0 50%;
-  bottom: 15px;
-  right: -10px;
-  transform: rotate(45deg) translateZ(5px);
-  transform-origin: bottom left;
-  box-shadow: -2px 5px 10px rgba(0, 0, 0, 0.2);
-  z-index: 0;
-  animation: tailWag 3s infinite alternate ease-in-out;
   
-  &::before {
-    content: '';
-    position: absolute;
-    width: 70%;
-    height: 70%;
-    border-radius: inherit;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
-    top: 5px;
-    left: 5px;
-  }
-  
-  @keyframes tailWag {
-    0% { transform: rotate(45deg) translateZ(5px); }
-    50% { transform: rotate(65deg) translateZ(5px); }
-    100% { transform: rotate(45deg) translateZ(5px); }
+  .highlight {
+    background: linear-gradient(90deg, #915eff, #00abfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(145, 94, 255, 0.3);
   }
 `;
 
@@ -652,7 +422,7 @@ const Contact = () => {
   });
   
   const [sendMethod, setSendMethod] = useState('whatsapp');
-
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -664,12 +434,15 @@ const Contact = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    const text = `Name: ${formData.name}%0AEmail: ${formData.email}%0ASubject: ${formData.subject}%0A%0AMessage: ${formData.message}`;
-    
     if (sendMethod === 'whatsapp') {
+      // Format for WhatsApp - using URL encoding for line breaks
+      const text = `Name: ${formData.name}%0AEmail: ${formData.email}%0ASubject: ${formData.subject}%0A%0AMessage: ${formData.message}`;
       window.open(`https://wa.me/201204385018?text=${text}`, '_blank');
     } else {
-      window.open(`mailto:youssefssayed5@gmail.com?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`)}`);
+      // Format for Email - using proper email encoding
+      const subject = encodeURIComponent(formData.subject);
+      const body = encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`);
+      window.open(`mailto:youssefssayed5@gmail.com?subject=${subject}&body=${body}`, '_blank');
     }
   };
   
@@ -751,16 +524,16 @@ const Contact = () => {
     }
   };
   
-  const bearRef = useRef(null);
   const bearContainerRef = useRef(null);
-  const [isBearHovering, setBearHovering] = useState(false);
   
   const [activeTooltip, setActiveTooltip] = useState(null);
   const [coverEyes, setCoverEyes] = useState(false);
-  const [bearSpeech, setBearSpeech] = useState('Hi there! I\'m Beary nice to meet you! Scroll down to contact Youssef! 🐻');
+  
+  // Fix ESLint warnings by properly initializing bearSpeechRef
+  const bearSpeechRef = useRef('Hi there! I\'m Beary nice to meet you! Scroll down to contact Youssef! 🐻');
   
   // Expanded message groups with variations
-  const [messageGroups] = useState({
+  const messageGroupsRef = useRef({
     welcome: [
       'Hi there! I\'m Beary nice to meet you! Scroll down to contact Youssef! 🐻',
       'Hello! I\'m Youssef\'s assistant! How can we help you today? 🐻',
@@ -799,63 +572,91 @@ const Contact = () => {
   });
   
   // For phone hover
-  const phoneMessages = [
+  const phoneMessagesRef = useRef([
     'Call me on WhatsApp! I promise I won\'t bite! 📱',
     'Got WhatsApp? Send a message directly to Youssef! 📲',
     'One tap on that number and you can chat with Youssef on WhatsApp! 💬',
     'WhatsApp is Youssef\'s favorite way to connect with clients! 📞',
     'Quick question? WhatsApp Youssef for an even quicker answer! ⚡'
-  ];
+  ]);
   
   // For email hover
-  const emailMessages = [
+  const emailMessagesRef = useRef([
     'Drop me a message! I check my inbox... sometimes! 📧',
     'Emails are perfect for detailed project discussions! 📝',
     'Send Youssef an email - it\'s the professional way to connect! 📨',
     'Need to share documents or details? Email is the way to go! 📎',
     'Your email will land directly in Youssef\'s priority inbox! ⭐'
-  ];
+  ]);
   
   // For location hover
-  const locationMessages = [
+  const locationMessagesRef = useRef([
     'Alex is the best city! The sea! The food! The traffic... well, 2 out of 3 isn\'t bad! 🌇',
     'Alexandria - where the Mediterranean meets incredible talent! 🌊',
     'The beautiful coastal city where Youssef brings designs to life! 🏙️',
     'From the shores of Alexandria to the digital world - location is no barrier! 🌍',
     'Alexandria: rich in history and home to your next favorite developer! 🏛️'
-  ];
+  ]);
   
   // For social hover
-  const socialMessages = [
+  const socialMessagesRef = useRef([
     'WARNING!! Funny content ahead! Cover your eyes if you can\'t handle awesomeness! 🙈',
     'Oh no! My eyes can\'t handle this much amazing content! 🙉',
     'Too much awesomeness in these social profiles! Must... cover... eyes! 😵',
     'Sensory overload from all this social media greatness! 🙈',
     'Warning: Viewing these profiles may cause extreme admiration! 🤩'
-  ];
+  ]);
   
-  // Current group for rotation
-  const [currentGroup, setCurrentGroup] = useState('welcome');
-  const [currentIndex, setCurrentIndex] = useState(0);
+  // Current group for rotation - use refs instead of state
+  const currentGroupRef = useRef('welcome');
+  const currentIndexRef = useRef(0);
   
-  // Enhanced message rotation with group switching
+  // Enhanced message rotation with group switching - optimized with refs
   useEffect(() => {
+    // Function to update speech bubble DOM directly without causing re-renders
+    const updateSpeechBubbleText = (text) => {
+      bearSpeechRef.current = text;
+      // Find and update the speech bubble element directly if it exists
+      const speechBubbles = document.querySelectorAll('.bear-speech-text');
+      speechBubbles.forEach(bubble => {
+        if (bubble) {
+          bubble.innerHTML = processMessage(text);
+        }
+      });
+    };
+    
+    // Process message to add highlight span to special keywords
+    const processMessage = (message) => {
+      // Highlight keywords with the gradient effect
+      const keywords = ['talented', 'React', 'developer', 'websites', 'modern', 'amazing', 'Youssef'];
+      let processedMessage = message;
+      
+      keywords.forEach(keyword => {
+        const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+        processedMessage = processedMessage.replace(regex, `<span class="highlight">$&</span>`);
+      });
+      
+      return processedMessage;
+    };
+    
     // Only rotate messages when there's no specific message showing
     if (!activeTooltip && !coverEyes) {
       const groupInterval = setInterval(() => {
         // Switch to a different message group every 15 seconds
-        const groups = Object.keys(messageGroups);
-        const currentGroupIndex = groups.indexOf(currentGroup);
+        const groups = Object.keys(messageGroupsRef.current);
+        const currentGroupIndex = groups.indexOf(currentGroupRef.current);
         const nextGroupIndex = (currentGroupIndex + 1) % groups.length;
-        setCurrentGroup(groups[nextGroupIndex]);
+        currentGroupRef.current = groups[nextGroupIndex];
       }, 15000);
       
       const messageInterval = setInterval(() => {
         // Rotate through messages within the current group every 5 seconds
-        const messages = messageGroups[currentGroup];
-        const nextIndex = (currentIndex + 1) % messages.length;
-        setCurrentIndex(nextIndex);
-        setBearSpeech(messages[nextIndex]);
+        const messages = messageGroupsRef.current[currentGroupRef.current];
+        const nextIndex = (currentIndexRef.current + 1) % messages.length;
+        currentIndexRef.current = nextIndex;
+        
+        // Update text without causing re-renders
+        updateSpeechBubbleText(messages[nextIndex]);
       }, 5000);
       
       return () => {
@@ -863,33 +664,85 @@ const Contact = () => {
         clearInterval(messageInterval);
       };
     }
-  }, [activeTooltip, coverEyes, messageGroups, currentGroup, currentIndex]);
+  }, [activeTooltip, coverEyes]);
   
-  // Get random message from array
+  // Get random message from array without causing re-renders
   const getRandomMessage = (messageArray) => {
     const randomIndex = Math.floor(Math.random() * messageArray.length);
     return messageArray[randomIndex];
   };
   
+  // Process message to add highlight spans
+  const processMessage = (message) => {
+    // Highlight keywords with the gradient effect
+    const keywords = ['talented', 'React', 'developer', 'websites', 'modern', 'amazing', 'Youssef'];
+    let processedMessage = message;
+    
+    keywords.forEach(keyword => {
+      const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+      processedMessage = processedMessage.replace(regex, `<span class="highlight">$&</span>`);
+    });
+    
+    return processedMessage;
+  };
+  
+  // Update handlers to use refs
   const handleInfoHover = (infoType) => {
     setActiveTooltip(infoType);
+    let newMessage = '';
     if (infoType === 'phone') {
-      setBearSpeech(getRandomMessage(phoneMessages));
+      newMessage = getRandomMessage(phoneMessagesRef.current);
     } else if (infoType === 'email') {
-      setBearSpeech(getRandomMessage(emailMessages));
+      newMessage = getRandomMessage(emailMessagesRef.current);
     } else if (infoType === 'location') {
-      setBearSpeech(getRandomMessage(locationMessages));
+      newMessage = getRandomMessage(locationMessagesRef.current);
     }
+    
+    // Update text without causing re-renders
+    bearSpeechRef.current = newMessage;
+    
+    // Find and update the speech bubble element directly
+    const speechBubbles = document.querySelectorAll('.bear-speech-text');
+    speechBubbles.forEach(bubble => {
+      if (bubble) {
+        bubble.innerHTML = processMessage(newMessage);
+      }
+    });
   };
   
   const handleSocialHover = () => {
     setCoverEyes(true);
-    setBearSpeech(getRandomMessage(socialMessages));
+    const newMessage = getRandomMessage(socialMessagesRef.current);
+    
+    // Update text without causing re-renders
+    bearSpeechRef.current = newMessage;
+    
+    // Find and update the speech bubble element directly
+    const speechBubbles = document.querySelectorAll('.bear-speech-text');
+    speechBubbles.forEach(bubble => {
+      if (bubble) {
+        bubble.innerHTML = processMessage(newMessage);
+      }
+    });
   };
   
   const handleSocialLeave = () => {
     setCoverEyes(false);
-    // Don't clear the speech - let it return to rotation
+    
+    // Return to a random welcome message when no longer hovering
+    const welcomeMessages = messageGroupsRef.current.welcome;
+    const newMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+    
+    // Update text without causing re-renders
+    bearSpeechRef.current = newMessage;
+    
+    // Find and update the speech bubble element directly
+    const speechBubbles = document.querySelectorAll('.bear-speech-text');
+    speechBubbles.forEach(bubble => {
+      if (bubble) {
+        bubble.innerHTML = processMessage(newMessage);
+      }
+    });
   };
   
   const handleInfoLeave = () => {
@@ -897,72 +750,82 @@ const Contact = () => {
     // Don't clear the speech - let it return to rotation
   };
 
-  const InteractiveBear = () => (
-    <BearContainer
-      ref={bearContainerRef}
-      onMouseEnter={() => setBearHovering(true)}
-      onMouseLeave={() => setBearHovering(false)}
-      initial={{ opacity: 0, y: 50 }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <BearSpeech>
-        {bearSpeech}
-      </BearSpeech>
-      <Bear ref={bearRef}>
-        <BearHead>
-          <BearEar className="left" />
-          <BearEar className="right" />
-          <BearEye className={`left ${coverEyes ? 'covered' : ''}`} />
-          <BearEye className={`right ${coverEyes ? 'covered' : ''}`} />
-          <BearPaw className={`left ${coverEyes ? 'visible' : ''}`} />
-          <BearPaw className={`right ${coverEyes ? 'visible' : ''}`} />
-          <BearMuzzle>
-            <BearNose />
-          </BearMuzzle>
-        </BearHead>
-        <BearBody>
-          <BearArm className="left" />
-          <BearArm className="right" />
-          <BearTail />
-        </BearBody>
-      </Bear>
-    </BearContainer>
-  );
+  // Create a memoized bear component to ensure it's only defined once
+  const FixedBear = useMemo(() => {
+    return (
+      <FixedBearContainer className="fixed-bear-container">
+        <BearContainer
+          ref={bearContainerRef}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <BearSpeech className="bear-speech">
+            <span className="bear-speech-text" dangerouslySetInnerHTML={{ __html: processMessage(bearSpeechRef.current) }} />
+          </BearSpeech>
+          <Canvas
+            shadows
+            dpr={[1, 2]}
+            camera={{ position: [0, 0, 5], fov: 50 }}
+            style={{ 
+              width: '100%', 
+              height: '100%',
+              borderRadius: '0', /* Removed border radius */
+              background: 'transparent',
+              border: 'none', /* Remove any border */
+              boxShadow: 'none', /* Remove any shadow */
+              position: 'relative',
+              top: '5px' /* Minimal offset to align with speech bubble */
+            }}
+          >
+            <ambientLight intensity={0.7} />
+            <pointLight position={[10, 10, 10]} intensity={0.5} />
+            <group scale={1.7}> {/* Maintained the scale */}
+              <ContactBear socialHover={coverEyes} />
+            </group>
+          </Canvas>
+        </BearContainer>
+      </FixedBearContainer>
+    );
+  }, [coverEyes]);
+
+  // Add scroll detection
+  const [isScrolled, setIsScrolled] = useState(false);
+  const contactSectionRef = useRef(null);
   
-  // Add back the mouse movement functionality
+  // Detect scroll position within the contact section
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (!bearRef.current || !bearContainerRef.current) return;
-      
-      const bearElement = bearRef.current;
-      const rect = bearContainerRef.current.getBoundingClientRect();
-      
-      // Calculate mouse position relative to the center of the container
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      
-      // Distance from center (normalized between -1 and 1)
-      const x = ((e.clientX - centerX) / (rect.width / 2)) * 1.5;
-      const y = ((e.clientY - centerY) / (rect.height / 2)) * 1.5;
-      
-      // Apply the rotation with stronger effect when hovering
-      const rotateYValue = isBearHovering ? x * 20 : x * 10;
-      const rotateXValue = isBearHovering ? -y * 20 : -y * 10;
-      
-      // Add subtle movement even when not directly over the bear
-      bearElement.style.transform = `rotateY(${rotateYValue}deg) rotateX(${rotateXValue}deg) ${isBearHovering ? 'scale(1.1)' : ''}`;
+    const handleScroll = () => {
+      if (contactSectionRef.current) {
+        const scrolled = window.scrollY > contactSectionRef.current.offsetTop + 100;
+        setIsScrolled(scrolled);
+      }
     };
     
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Apply the styles when the component is rendered
+  useEffect(() => {
+    // Add the global styles to the document when component mounts
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = cursorTrackingStyles;
+    document.head.appendChild(styleElement);
     
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
+      document.head.removeChild(styleElement);
     };
-  }, [isBearHovering]);
-  
+  }, []);
+
   return (
-    <ContactSection id="contact" ref={ref}>
+    <ContactSection id="contact" ref={(el) => {
+      contactSectionRef.current = el;
+      ref(el);
+    }} className={`contact-section-container ${isScrolled ? 'scrolled' : ''}`}>
+      {/* Fixed bear component that stays visible within the Contact section */}
+      {FixedBear}
+      
       <ContentContainer>
         <SectionTitle
           initial={{ opacity: 0, y: -50 }}
@@ -971,8 +834,6 @@ const Contact = () => {
         >
           Connect <span>With Me</span>
         </SectionTitle>
-        
-        <InteractiveBear />
         
         <ContactContent>
           <ContactForm
@@ -990,6 +851,8 @@ const Contact = () => {
                 value={formData.name}
                 onChange={handleInputChange}
                 whileFocus={{ scale: 1.02 }}
+                minLength="2"
+                maxLength="50"
               />
             </motion.div>
             
@@ -1002,6 +865,8 @@ const Contact = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 whileFocus={{ scale: 1.02 }}
+                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                title="Please enter a valid email address"
               />
             </motion.div>
             
@@ -1014,6 +879,8 @@ const Contact = () => {
                 value={formData.subject}
                 onChange={handleInputChange}
                 whileFocus={{ scale: 1.02 }}
+                minLength="2"
+                maxLength="100"
               />
             </motion.div>
             
@@ -1025,6 +892,8 @@ const Contact = () => {
                 value={formData.message}
                 onChange={handleInputChange}
                 whileFocus={{ scale: 1.02 }}
+                minLength="10"
+                maxLength="1000"
               />
             </motion.div>
             

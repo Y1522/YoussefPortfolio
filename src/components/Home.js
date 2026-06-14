@@ -9,7 +9,7 @@ const HomeSection = styled.section`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 0 2rem;
+  padding: 6rem 2rem 2rem; /* Increased top padding to make space for header */
   position: relative;
   overflow: hidden;
 `;
@@ -33,8 +33,12 @@ const TextContent = styled(motion.div)`
   z-index: 1;
   
   @media (max-width: 768px) {
-    margin-top: 5rem;
-    margin-bottom: 3rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 `;
 
@@ -130,30 +134,60 @@ const ScrollDown = styled(motion.div)`
 `;
 
 const ImagePreview = styled(motion.div)`
-  max-width: 400px;
+  max-width: 300px; /* Reduced from 400px */
   width: 100%;
   position: relative;
+  margin-left: 2rem;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent 65%, rgba(145, 94, 255, 0.8) 100%);
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  
+  &:hover::after {
+    opacity: 0.6;
+  }
   
   img {
     width: 100%;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    transition: all 0.5s ease;
   }
   
   &:before {
     content: '';
     position: absolute;
-    top: -20px;
-    left: -20px;
-    right: 20px;
-    bottom: 20px;
+    top: -10px; /* Reduced from -20px */
+    left: -10px; /* Reduced from -20px */
+    right: 10px; /* Reduced from 20px */
+    bottom: 10px; /* Reduced from 20px */
     border: 2px solid #915eff;
     border-radius: 20px;
     z-index: -1;
+    transition: all 0.5s ease;
+  }
+  
+  &:hover:before {
+    top: -8px; /* Adjusted for smaller image */
+    left: -8px; /* Adjusted for smaller image */
+    right: 8px; /* Adjusted for smaller image */
+    bottom: 8px; /* Adjusted for smaller image */
+    border-color: #00abfa;
   }
   
   @media (max-width: 768px) {
-    display: none;
+    display: block; /* Changed from none to make visible on mobile */
+    max-width: 200px; /* Smaller on mobile */
+    margin: 0 auto 2rem; /* Center on mobile */
   }
 `;
 
@@ -192,7 +226,7 @@ const Home = () => {
         <TextContent>
           <SubHeading variants={itemVariants}>Welcome to my portfolio</SubHeading>
           <MainHeading variants={itemVariants}>
-            Hi, I'm <span>Youssef</span><br />
+            Hi, I'm <span className="gradient-text">Youssef</span><br />
             Frontend Developer
           </MainHeading>
           <Description variants={itemVariants}>
@@ -201,6 +235,7 @@ const Home = () => {
             Specializing in React and creative 3D interfaces.
           </Description>
           <CTAButton
+            className="glow-effect"
             variants={itemVariants}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -211,13 +246,21 @@ const Home = () => {
         </TextContent>
         
         <ImagePreview
+          className="float-animation"
           variants={itemVariants}
-          whileHover={{ scale: 1.05, rotate: -2 }}
-          transition={{ type: 'spring', stiffness: 300 }}
+          whileHover={{ 
+            scale: 1.05, 
+            rotate: -2,
+            transition: { type: 'spring', stiffness: 300 }
+          }}
+          whileTap={{ scale: 0.95 }}
         >
-          <img 
+          <motion.img 
             src={profilePhoto} 
-            alt="Youssef profile" 
+            alt="Youssef profile"
+            whileHover={{ 
+              filter: 'brightness(1.2) contrast(1.1)'
+            }}
           />
         </ImagePreview>
       </ContentWrapper>

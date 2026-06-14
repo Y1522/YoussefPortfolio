@@ -188,6 +188,49 @@ const SkillsGrid = styled.div`
   margin-top: 3rem;
 `;
 
+const ProjectsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+`;
+
+const ProjectCard = styled(motion.div)`
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    border-color: rgba(145, 94, 255, 0.5);
+  }
+`;
+
+const ProjectTitle = styled.h3`
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #fff;
+`;
+
+const ProjectLink = styled.a`
+  display: inline-block;
+  color: #00abfa;
+  text-decoration: none;
+  font-weight: 500;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    color: #915eff;
+    text-decoration: underline;
+  }
+`;
+
 const SkillBar = styled(motion.div)`
   margin-bottom: 1.5rem;
   
@@ -242,7 +285,7 @@ const Resume = () => {
       date: "2017 - Present",
       title: "Volunteer",
       company: "Bibliotheca Alexandrina",
-      description: "Voluteering at Three diffrent Departments (Childrens Library - PSC - SDSP) , learning everyday a new skill and enjoy. "
+      description: "Voluteering at Three diffrent Departments (Childrens Library - PSC - SDSP) , learning everyday a new skill and enjoy."
     },
   ];
   
@@ -257,9 +300,22 @@ const Resume = () => {
       date: "2024 - Present",
       title: "Student of Computers and Data Science",
       institution: "Alexandria University",
-      description: "Studied computer science fundamentals, algorithms, data structures, and web technologies. "
+      description: "Studied computer science fundamentals, algorithms, data structures, and web technologies."
     }
   ];
+  
+  const projectsData = {
+    dataScience: [],
+    machineLearning: [],
+    web: [
+      {
+        name: "Portfolio Website",
+        githubLink: "https://github.com/youssefssaied",
+        description: "A modern, responsive portfolio website built with React, Three.js, and Framer Motion. Features interactive 3D elements, smooth animations, and a clean, professional design.",
+        technologies: ["React", "Three.js", "Framer Motion", "Styled Components", "CSS3"]
+      }
+    ]
+  };
   
   const skillsData = [
     { name: "React", percentage: 95 },
@@ -268,6 +324,8 @@ const Resume = () => {
     { name: "Node.js", percentage: 75 },
     { name: "UI/UX Design", percentage: 80 },
     { name: "Git/GitHub", percentage: 85 },
+    { name: "Python", percentage: 80 },
+    { name: "Java", percentage: 85 },
   ];
   
   const renderTimeline = (data) => {
@@ -325,6 +383,73 @@ const Resume = () => {
     );
   };
   
+  const renderProjectCategory = (title, projects) => {
+    if (projects.length === 0) {
+      return (
+        <div style={{ marginBottom: '3rem' }}>
+          <h3 style={{ color: '#00abfa', marginBottom: '1.5rem', fontSize: '1.8rem', textAlign: 'center' }}>{title}</h3>
+          <p style={{ textAlign: 'center', color: '#aaa' }}>Projects coming soon...</p>
+        </div>
+      );
+    }
+    return (
+      <div style={{ marginBottom: '3rem' }}>
+        <h3 style={{ color: '#00abfa', marginBottom: '1.5rem', fontSize: '1.8rem', textAlign: 'center' }}>{title}</h3>
+        <ProjectsGrid>
+          {projects.map((project, index) => (
+            <ProjectCard
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              whileHover={{ scale: 1.03 }}
+              style={{ maxWidth: '600px', margin: '0 auto', width: '100%' }}
+            >
+              <ProjectTitle>{project.name}</ProjectTitle>
+              <TimelineText style={{ marginBottom: '1rem' }}>{project.description}</TimelineText>
+              <div style={{ 
+                display: 'flex', 
+                flexWrap: 'wrap', 
+                gap: '8px', 
+                marginBottom: '1rem' 
+              }}>
+                {project.technologies.map((tech, i) => (
+                  <span key={i} style={{
+                    background: 'rgba(145, 94, 255, 0.2)',
+                    color: '#00abfa',
+                    padding: '4px 10px',
+                    borderRadius: '20px',
+                    fontSize: '0.8rem',
+                    fontWeight: '500'
+                  }}>
+                    {tech}
+                  </span>
+                ))}
+              </div>
+              <ProjectLink 
+                href={project.githubLink} 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                View on GitHub →
+              </ProjectLink>
+            </ProjectCard>
+          ))}
+        </ProjectsGrid>
+      </div>
+    );
+  };
+
+  const renderProjects = () => {
+    return (
+      <div>
+        {renderProjectCategory("Data Science Projects", projectsData.dataScience)}
+        {renderProjectCategory("Machine Learning Projects", projectsData.machineLearning)}
+        {renderProjectCategory("Web Projects", projectsData.web)}
+      </div>
+    );
+  };
+  
   const tabVariants = {
     hidden: { opacity: 0, y: -20 },
     visible: {
@@ -370,6 +495,14 @@ const Resume = () => {
             Education
           </Tab>
           <Tab 
+            active={activeTab === 'projects'} 
+            onClick={() => setActiveTab('projects')}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            My Projects
+          </Tab>
+          <Tab 
             active={activeTab === 'skills'} 
             onClick={() => setActiveTab('skills')}
             whileHover={{ scale: 1.05 }}
@@ -397,6 +530,8 @@ const Resume = () => {
               {renderTimeline(educationData)}
             </TimelineContainer>
           )}
+          
+          {activeTab === 'projects' && renderProjects()}
           
           {activeTab === 'skills' && renderSkills()}
         </motion.div>
@@ -429,4 +564,4 @@ const Resume = () => {
   );
 };
 
-export default Resume; 
+export default Resume;
