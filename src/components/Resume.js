@@ -329,6 +329,12 @@ const Resume = () => {
         description: "Cardio Risk Analysis is a data mining and machine learning project focused on analyzing cardiovascular health data using preprocessing, feature scaling, clustering algorithms, and logistic regression to discover hidden patterns and predict potential health risks.",
         technologies: ["Python", "Logistic Regression", "K-Medoids Clustering", "Feature Scaling", "Data Visualization", "Scikit-learn", "Genatic Algorithm","Pandas", "Matplotlib"]
       },
+       {
+        name: "WeatherPulse-DataScience",
+        githubLink: "https://github.com/Y1522/WeatherPulse-DataScience",
+        description: "A complete data science pipeline for weather analytics using NOAA data, including data acquisition, preprocessing, EDA, visualization, and machine learning forecasting.",
+        technologies: ["Python", "Data Collection","API", "Data Visualization", "Scikit-learn","Pandas", "Matplotlib","LSTM"]
+      },
       {
         name: "car-price-prediction-sas",
         githubLink: "https://github.com/Y1522/car-price-prediction-sas",
