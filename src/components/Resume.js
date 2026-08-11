@@ -277,9 +277,9 @@ const Resume = () => {
   const experienceData = [
     {
       date: "2026",
-      title: "Events Spishalist",
+      title: "Events Specialist",
       company: "Events and Outreach Unit , BA PSC ",
-      description: `working as Events Spishalist which mean Organizing and planning large-scale educational and scientific events also create and manage the Online organizing system `
+      description: `working as Events Specialist which mean Organizing and planning large-scale educational and scientific events also create and manage the Online organizing system `
     },
     {
       date: "2026",
