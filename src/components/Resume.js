@@ -288,7 +288,7 @@ const Resume = () => {
       description: `Part of the IT and AV teams dealing with a real world projects and setup `
     },{
     date: "2026",
-    title: "Robotics Instractor ",
+    title: "Robotics Instructor ",
     company: "Innov Academny ",
     description: `Teaching childrens and teenagers robotics,AI,Coding and IOT during iteractive seaseions  `
   },
