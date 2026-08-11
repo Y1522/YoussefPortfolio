@@ -290,7 +290,7 @@ const Resume = () => {
     date: "2026",
     title: "Robotics Instructor ",
     company: "Innov Academny ",
-    description: `Teaching childrens and teenagers robotics,AI,Coding and IOT during iteractive seaseions  `
+    description: `Teaching childrens and teenagers robotics,AI,Coding and IOT during iteractive sessions `
   },
     {
       date: "2017 - Present",
