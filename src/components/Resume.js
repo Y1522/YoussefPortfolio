@@ -341,9 +341,9 @@ const Resume = () => {
   const projectsData = {
     dataScience: [
       {
-        name: "Weather Pulse",
+        name: "WeatherPulse-DataScience",
         githubLink: "https://github.com/Y1522/WeatherPulse-DataScience",
-        description: "A data science project focused on weather data analysis, prediction, and visualization.",
+        description: "A complete data science pipeline for weather analytics using NOAA data, including data acquisition, preprocessing, EDA, visualization, and machine learning forecasting.",
         technologies: ["Python", "Data Science", "Machine Learning", "Data Visualization"]
       },
       {
