@@ -417,14 +417,14 @@ const About = () => {
   ];
   
   const stats = [
-    { number: "2+", label: "Years Experience" },
+    { number: "+2", label: "Years Experience" },
     { number: "20+", label: "Projects Completed" }
   ];
 
   // Animation for counting up numbers
   useEffect(() => {
     if (inView) {
-      const targetValues = [1, 20, 2];
+      const targetValues = [2, 20];
       const duration = 2000; // 2 seconds for the animation
       const frameDuration = 1000 / 60; // 60fps
       const totalFrames = Math.round(duration / frameDuration);
@@ -551,7 +551,7 @@ const About = () => {
               animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
               transition={{ duration: 0.3, delay: index * 0.1 + 0.5 }}
             >
-              <StatNumber>{counts[index]}{stat.number.includes('+') ? '+' : ''}</StatNumber>
+              <StatNumber>{stat.number.startsWith('+') ? '+' : ''}{counts[index]}{stat.number.endsWith('+') ? '+' : ''}</StatNumber>
               <StatLabel>{stat.label}</StatLabel>
             </StatCard>
           ))}

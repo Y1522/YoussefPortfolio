@@ -328,7 +328,13 @@ const Resume = () => {
       date: "2024 - Present",
       title: "Student of Computers and Data Science",
       institution: "Alexandria University",
-      description: "Studied computer science fundamentals, algorithms, data structures, and ."
+      description: "Studied computer science fundamentals, algorithms, data structures, and web technologies."
+    },
+    {
+      date: "2026 - Present",
+      title: "Big Data intern",
+      institution: "NTI",
+      description: "Learning Hadoop, Spark, and more."
     }
   ];
   
@@ -558,20 +564,20 @@ const Resume = () => {
             Experience
           </Tab>
           <Tab 
-            active={activeTab === 'education'} 
-            onClick={() => setActiveTab('education')}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Education
-          </Tab>
-          <Tab 
             active={activeTab === 'projects'} 
             onClick={() => setActiveTab('projects')}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             My Projects
+          </Tab>
+          <Tab 
+            active={activeTab === 'education'} 
+            onClick={() => setActiveTab('education')}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Education
           </Tab>
           <Tab 
             active={activeTab === 'skills'} 
