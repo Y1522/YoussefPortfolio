@@ -276,6 +276,23 @@ const Resume = () => {
   
   const experienceData = [
     {
+      date: "2026",
+      title: "Events Spishalist",
+      company: "Events and Outreach Unit , BA PSC ",
+      description: `working as Events Spishalist which mean Organizing and planning large-scale educational and scientific events also create and manage the Online organizing system `
+    },
+    {
+      date: "2026",
+      title: "Part Time organizer ",
+      company: "Icom Group ",
+      description: `Part of the IT and AV teams dealing with a real world projects and setup `
+    },{
+    date: "2026",
+    title: "Robotics Instractor ",
+    company: "Innov Academny ",
+    description: `Teaching childrens and teenagers robotics,AI,Coding and IOT during iteractive seaseions  `
+  },
+    {
       date: "2017 - Present",
       title: "Volunteer",
       company: "Bibliotheca Alexandrina",
@@ -297,12 +314,6 @@ const Resume = () => {
       title: "IT Volunteer",
       company: "Techne Summit Alexandria",
       description: `As an IT team member, I contributed to the setup and maintenance of network infrastructure, managed audio-visual equipment and presentation systems, and provided real-time technical support during large-scale events. By troubleshooting hardware, network, and AV issues and collaborating closely with the IT team, I helped ensure smooth technical operations and a seamless experience for attendees, speakers, and event organizers.`
-    },
-    {
-      date: "2026",
-      title: "Part Time organizer ",
-      company: "icom Group ",
-      description: `Part of the IT and AV teams dealing with a real world projects and stepup `
     },
     {
       date: "2025-2026",
