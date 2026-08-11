@@ -325,12 +325,6 @@ const Resume = () => {
   
   const educationData = [
     {
-      date: "2022 - 2024",
-      title: "Web Development Bootcamp",
-      institution: "Self-learning",
-      description: "Intensive full-stack web development program covering frontend and backend technologies, with a focus on modern JavaScript frameworks."
-    },
-    {
       date: "2024 - Present",
       title: "Student of Computers and Data Science",
       institution: "Alexandria University",
@@ -340,6 +334,12 @@ const Resume = () => {
   
   const projectsData = {
     dataScience: [
+      {
+        name: "Weather Pulse",
+        githubLink: "https://github.com/Y1522/WeatherPulse-DataScience",
+        description: "A data science project focused on weather data analysis, prediction, and visualization.",
+        technologies: ["Python", "Data Science", "Machine Learning", "Data Visualization"]
+      },
       {
         name: "cardio-risk-analysis",
         githubLink: "https://github.com/Y1522/cardio-risk-analysis",
