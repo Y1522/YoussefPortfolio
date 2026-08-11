@@ -377,7 +377,7 @@ const Resume = () => {
       {
         name: "Science_Festivity-25",
         githubLink: "https://github.com/Y1522/Science_Festivity-25",
-        description: "An interactive educational website developed for Science Festivity 2025, showcasing the achievements of Arab scientists during the Golden Age of Islam. Features multilingual support, educational games, an AI-powered chatbot assistant AND  an interactive map",
+        description: "An interactive educational website developed for Science Festivity 2025, showcasing the achievements of Arab scientists during the Golden Age of Islam. Features multilingual support, educational games, an AI-powered chatbot assistant AND an interactive map. (Note: This website is optimized for mobile users only)",
         technologies: ["HTML", "CSS", "JavaScript", "Firebase Hosting"]
       },
       {
