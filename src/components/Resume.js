@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import cvPdf from '../assets/YOUSSEF SAYED HUSSIEN - CV  (2).pdf';
+const cvLink = 'https://drive.google.com/file/d/1T2ZSsyA7M_dF5Nfw8pJ_1MlWECtnuHs-/view?usp=sharing';
 
 const ResumeSection = styled.section`
   min-height: 100vh;
@@ -620,8 +620,9 @@ const Resume = () => {
           transition={{ delay: 1 }}
         >
           <a 
-            href={cvPdf}
-            download="Youssef_CV.pdf"
+            href={cvLink}
+            target="_blank"
+            rel="noopener noreferrer"
             style={{
               display: 'inline-block',
               background: 'linear-gradient(90deg, #915eff, #00abfa)',
